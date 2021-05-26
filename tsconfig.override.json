@@ -7,10 +7,11 @@
       "paths": {
         "~/*": ["./*"],
         "@api/*": ["./api/*"],
+        "@chat/*": ["./chat/*"],
         "@assets/*": ["./assets/*"],
         "@store":["./redux/store.ts"],
         "@redux/*": ["./redux/*"],
-        "@components/*": ["./components/*"],
+        "@common/*": ["./common/*"],
         "@utils/*": ["./utils/*"]
       }
   }

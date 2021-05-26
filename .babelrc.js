@@ -8,6 +8,8 @@ const plugins = [
           "@api": "./api",
           "@assets": "./assets",
           "@redux": "./redux",
+          "@chat": "./chat",
+          "@common": "./common",
           "@components": "./common/components",
           "@utils": "./utils",
         }

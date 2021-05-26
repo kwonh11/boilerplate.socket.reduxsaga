@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { createGlobalStyle, css } from "styled-components";
 import reset from "styled-reset";
 import { Router, Route, Switch } from "react-router-dom";
 import {createBrowserHistory} from 'history';
 import {useDispatch, useSelector, RootStateOrAny} from 'react-redux';
 import { actions as commonActions } from '@redux/common/state';
+import SocketContainer from '@chat/SocketContainer';
+import socket from './config/socket';
 
 const GlobalFontStyle = createGlobalStyle`
 `;
@@ -33,33 +35,58 @@ const AppContainer = styled.div`
   margin: 0 auto;
   position: relative;
 `;
+const Connection= styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 180px;
+  height: 50px;
+  padding: 50px 50px;
+  margin: 0 auto;
+  align-items: center;
+  color: ${props => props.connected === "on" ? "green" : "red"};
+  & > div {
+    width: 20px;
+    height: 20px;
+    border-radius: 40px;
+    background-color: ${props => props.connected === "on" ? "green" : "red"};  
+  }
+`;
+
+const ConnectionStatus = ({connected}) => {
+  console.log(connected , "connected")
+  return (
+    <Connection connected={connected ? "on" : "off"}>
+      <div /> {connected ? "연결됨" : "끊김"} 
+    </Connection>
+  )
+}
 
 // useHistory 훅을 사용하기위해 createBrowserHistory로 생성한 객체를 Router객체에 삽입
 const history = createBrowserHistory();
 function App() {
+  const [on, setOn] = useState(false);
   const dispatch = useDispatch();
-  const {isLoggedIn} = useSelector((state:RootStateOrAny) => state.common);
+
   useEffect(() => {
-    const isLoggedIn = window.localStorage.getItem("access_token");
-    // check login 로직 추가
-    dispatch(commonActions.setIsLoggedIn(true));
+    socket.on("connect", () => {
+      setOn(true);
+    })
+    socket.on("disconnect", () => {
+      setOn(false);
+      socket.connect();
+    })
   }, []);
   return (
     <React.Fragment>
       <GlobalFontStyle />
       <GlobalStyle />
-      <div> 로그인 ? : {isLoggedIn}</div>
+      <ConnectionStatus connected={on} />
       <Router history={history}>
         {/* <Switch>
           <Route path="/" exact component={SwitchContainer} />
         </Switch> */}
         <AppContainer>
-          <Switch>
-            {/* <Route
-              path="/place/:contenttypeid/:contentid"
-              component={DetailPage}
-            /> */}
-          </Switch>
+          <SocketContainer />
         </AppContainer>
         {/* <Route path="/" exact component={Footer} /> */}
       </Router>
